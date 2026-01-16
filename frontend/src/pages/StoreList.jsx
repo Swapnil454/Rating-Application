@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import RatingForm from '../components/RatingForm';
 
 const StoreList = () => {
@@ -9,9 +9,12 @@ const StoreList = () => {
 
   const fetchStores = () => {
     const params = new URLSearchParams(filters).toString();
-    axios.get(`/api/stores?${params}`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => setStores(res.data))
-      .catch(() => setStores([]));
+    api.get(`/api/stores?${params}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => setStores(Array.isArray(res.data) ? res.data : []))
+      .catch(err => {
+        console.error('Failed to fetch stores:', err);
+        setStores([]);
+      });
   };
 
   useEffect(() => {
@@ -33,7 +36,7 @@ const StoreList = () => {
         <button type="submit" className="bg-blue-500 text-white px-4 py-2">Search</button>
       </form>
       <div className="space-y-6">
-        {stores.map(store => (
+        {(stores || []).map(store => (
           <div key={store._id} className="border p-4 rounded">
             <div className="font-semibold">{store.name}</div>
             <div className="text-gray-600">{store.address}</div>

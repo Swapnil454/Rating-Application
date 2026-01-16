@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { Search } from 'lucide-react';
 
 const UserList = () => {
@@ -15,12 +15,15 @@ const UserList = () => {
 
   const fetchUsers = useCallback(() => {
     const params = new URLSearchParams(filters).toString();
-    axios
+    api
       .get(`/api/users?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((res) => setUsers(res.data))
-      .catch(() => setUsers([]));
+      .then((res) => setUsers(Array.isArray(res.data) ? res.data : []))
+      .catch((err) => {
+        console.error('Failed to fetch users:', err);
+        setUsers([]);
+      });
   }, [filters, token]);
 
   useEffect(() => {
@@ -87,11 +90,11 @@ const UserList = () => {
       </form>
 
       {/* Users Display */}
-      {users.length === 0 ? (
+      {(users || []).length === 0 ? (
         <p className="text-gray-500 dark:text-gray-400">No users found.</p>
       ) : (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {users.map((user) => (
+          {(users || []).map((user) => (
             <div
               key={user._id}
               className="p-5 bg-gray-50 dark:bg-gray-800 rounded-xl shadow hover:shadow-md transition"

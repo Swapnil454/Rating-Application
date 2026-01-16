@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Sun, Moon, Users2, Store, Star, BarChart3 } from 'lucide-react';
@@ -23,12 +23,12 @@ const Dashboard = () => {
   }, [darkMode]);
 
   useEffect(() => {
-    axios.get('/api/ratings/average', {
+    api.get('/api/ratings/average', {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => setStoreRatings(res.data))
       .catch(err => console.error('Failed to load store ratings:', err));
 
-    axios.get('/api/dashboard', {
+    api.get('/api/dashboard', {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => setStats(res.data))
       .catch(() => setStats({
@@ -60,7 +60,7 @@ const Dashboard = () => {
     </motion.div>
   );
 
-  const filteredRatings = stats.recentRatings.filter(r => {
+  const filteredRatings = (stats.recentRatings || []).filter(r => {
     const userMatch = r.user?.name?.toLowerCase().includes(searchTerm.toLowerCase());
     const storeMatch = r.store?.name?.toLowerCase().includes(searchTerm.toLowerCase());
     const ratingMatch = String(r.rating).includes(searchTerm);

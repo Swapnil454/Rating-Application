@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 
 const OwnerRatings = () => {
   const [ratings, setRatings] = useState([]);
@@ -9,7 +9,7 @@ const OwnerRatings = () => {
     const token = localStorage.getItem('token');
     const fetchRatings = async () => {
       try {
-        const res = await axios.get('http://localhost:8786/api/ratings/owner', {
+        const res = await api.get('/api/ratings/owner', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

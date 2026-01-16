@@ -1,51 +1,8 @@
-// // pages/VerifyResetOtp.jsx
-// import { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
 
-// const VerifyResetOtp = () => {
-//   const [otp, setOtp] = useState('');
-//   const [error, setError] = useState('');
-//   const navigate = useNavigate();
-
-//   const email = localStorage.getItem('resetEmail');
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setError('');
-
-//     try {
-//       await axios.post('/api/auth/verify-reset-otp', { email, otpInput: otp });
-//       setTimeout(() => navigate('/reset-password'), 1000);
-//     } catch (err) {
-//       setError(err.response?.data?.error || 'Invalid OTP.');
-//     }
-//   };
-
-//   return (
-//     <div className="p-6 max-w-md mx-auto mt-20 bg-white rounded-xl shadow-md space-y-6">
-//       <h2 className="text-xl font-semibold">Verify OTP</h2>
-//       <form onSubmit={handleSubmit}>
-//         <input
-//           type="text"
-//           placeholder="Enter OTP"
-//           value={otp}
-//           required
-//           onChange={(e) => setOtp(e.target.value)}
-//           className="w-full p-2 border rounded mb-4"
-//         />
-//         <button className="w-full py-2 bg-green-600 text-white rounded">Verify</button>
-//       </form>
-//       {error && <p className="text-red-500">{error}</p>}
-//     </div>
-//   );
-// };
-
-// export default VerifyResetOtp;
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import axios from 'axios';
+import api from '../api/axios';
 import { Loader2 } from 'lucide-react';
 
 const VerifyResetOtp = () => {
@@ -61,7 +18,7 @@ const VerifyResetOtp = () => {
     setLoading(true);
 
     try {
-      await axios.post('/api/auth/verify-reset-otp', { email, otpInput: otp });
+      await api.post('/api/auth/verify-reset-otp', { email, otpInput: otp });
       setTimeout(() => {
         setLoading(false);
         navigate('/reset-password');

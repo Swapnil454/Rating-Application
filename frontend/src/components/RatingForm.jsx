@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { Star, AlertCircle } from 'lucide-react';
 
 const RatingForm = ({ storeId, token, isOwner }) => {
@@ -12,7 +12,7 @@ const RatingForm = ({ storeId, token, isOwner }) => {
 
   const fetchRatings = async () => {
     try {
-      const res = await axios.get(`/api/ratings/store/${storeId}`, {
+      const res = await api.get(`/api/ratings/store/${storeId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRatings(res.data.ratings);
@@ -29,7 +29,7 @@ const RatingForm = ({ storeId, token, isOwner }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
+      await api.post(
         '/api/ratings',
         { store: storeId, rating },
         { headers: { Authorization: `Bearer ${token}` } }

@@ -46,7 +46,6 @@ const SignupForm = () => {
     e.preventDefault();
 
     if (showOtpField) {
-      // ✅ OTP Submit
       try {
         setLoading(true);
         const res = await api.post('/api/auth/verify-otp', {
@@ -61,10 +60,8 @@ const SignupForm = () => {
         setSuccess(true);
         alert('Signup successful! Redirecting to login...');
 
-        // ✅ Reset all states after success
         resetForm();
 
-        // ✅ Optionally redirect to login page after delay
         setTimeout(() => navigate('/login'), 1000);
       } catch (err) {
         setMessage(err.response?.data?.error || 'OTP verification failed.');
@@ -73,7 +70,6 @@ const SignupForm = () => {
         setLoading(false);
       }
     } else {
-      // ✅ Signup Submit
       try {
         setLoading(true);
         const res = await api.post('/api/auth/signup', form);
@@ -163,7 +159,7 @@ const SignupForm = () => {
             >
               <option value="user">👤 User</option>
               <option value="owner">🏪 Store Owner</option>
-              {/* <option value="admin">Admin</option> */}
+              {/*<option value="admin">Admin</option> */}
             </select>
           </div>
         ) : (

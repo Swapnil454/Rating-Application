@@ -1,33 +1,4 @@
-// const nodemailer = require("nodemailer");
 
-// const transporter = nodemailer.createTransport({
-//   service: "gmail", // or another provider
-//   auth: {
-//     user: process.env.EMAIL_USER,
-//     pass: process.env.EMAIL_PASS,
-//   },
-  
-  
-
-// });
-
-// const sendOTP = async (to, otp) => {
-//   try {
-//     await transporter.sendMail({
-//       from: `"Rating App" <${process.env.EMAIL_USER}>`,
-//       to,
-//       subject: "Your OTP Verification Code",
-//       html: `<p>Your OTP code is: <b>${otp}</b>. It expires in 10 minutes.</p>`,
-//     });
-//     console.log("✅ OTP email sent to:", to);
-//     console.log("✅ OTP email sent to:", otp);
-//   } catch (err) {
-//     console.error("❌ Failed to send OTP:", err.message);
-//   }
-// };
-
-
-// module.exports = sendOTP;
 const sgMail = require("@sendgrid/mail");
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -50,13 +21,12 @@ const sendOTP = async (to, otp) => {
       `,
     };
 
-    // 🔥 NON-BLOCKING SEND (IMPORTANT)
     sgMail.send(msg)
-      .then(() => console.log("✅ OTP email sent to:", to))
-      .catch(err => console.error("❌ SendGrid error:", err.message));
+      .then(() => console.log("OTP email sent to:", to))
+      .catch(err => console.error("SendGrid error:", err.message));
 
   } catch (err) {
-    console.error("❌ Failed to send OTP:", err.message);
+    console.error("Failed to send OTP:", err.message);
   }
 };
 

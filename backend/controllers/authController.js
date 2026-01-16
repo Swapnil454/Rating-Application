@@ -7,7 +7,6 @@ const sendOTP = require('../utils/sendOTP');
 const {checkOtpCooldown} = require("../utils/otpRateLimiter")
 const otpStore = require("../utils/otpStore");
 
-// const otpStore = new Map(); // { email: { otp, expiresAt, tempUser } }
 
 // -------------------- SIGNUP --------------------
 exports.signup = async (req, res) => {
@@ -190,41 +189,6 @@ exports.updatePassword = async (req, res) => {
 
 // -------------------- FORGOT PASSWORD --------------------
 
-// exports.forgotPassword = async (req, res) => {
-//   const { email } = req.body;
-
-//   try {
-//     if (!email) {
-//       return res.status(400).json({ error: "Email is required." });
-//     }
-
-//     const user = await User.findOne({ email });
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found." });
-//     }
-
-//     const otp = generateOTP();
-//     const expiresAt = Date.now() + 10 * 60 * 1000;
-
-//     otpStore.set(email, { otp, expiresAt });
-
-//     await sendOTP(email, otp);
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "OTP sent to your email.",
-//     });
-
-//   } catch (err) {
-//     console.error("Forgot password error:", err);
-
-//     return res.status(500).json({
-//       success: false,
-//       error: "Failed to send OTP. Please try again later.",
-//     });
-//   }
-// };
-
 
 const OTP_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
 
@@ -232,7 +196,6 @@ exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
 
   try {
-    // 1️⃣ Validate email
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -240,7 +203,6 @@ exports.forgotPassword = async (req, res) => {
       });
     }
 
-    // 2️⃣ Check user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
@@ -249,7 +211,6 @@ exports.forgotPassword = async (req, res) => {
       });
     }
 
-    // 3️⃣ OTP rate limit (1 OTP / minute)
     if (!checkOtpCooldown(email)) {
       return res.status(429).json({
         success: false,
@@ -257,14 +218,11 @@ exports.forgotPassword = async (req, res) => {
       });
     }
 
-    // 4️⃣ Generate OTP
     const otp = generateOTP();
     const expiresAt = Date.now() + OTP_EXPIRY_MS;
 
-    // 5️⃣ Store OTP
     otpStore.set(email, { otp, expiresAt });
 
-    // 6️⃣ Send OTP
     sendOTP(email, otp);
 
     return res.status(200).json({

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 
 const StoreManagement = () => {
   const [stores, setStores] = useState([]);
@@ -8,8 +8,12 @@ const StoreManagement = () => {
   const token = localStorage.getItem('token');
 
   const fetchStores = () => {
-    axios.get('/api/stores', { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => setStores(res.data));
+    api.get('/api/stores', { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => setStores(res.data || []))
+      .catch(err => {
+        console.error('Failed to fetch stores:', err);
+        setStores([]);
+      });
   };
 
   useEffect(() => { fetchStores(); }, [token]);
@@ -18,14 +22,18 @@ const StoreManagement = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (editId) {
-      await axios.put(`/api/stores/${editId}`, form, { headers: { Authorization: `Bearer ${token}` } });
-    } else {
-      await axios.post('/api/stores', form, { headers: { Authorization: `Bearer ${token}` } });
+    try {
+      if (editId) {
+        await api.put(`/api/stores/${editId}`, form, { headers: { Authorization: `Bearer ${token}` } });
+      } else {
+        await api.post('/api/stores', form, { headers: { Authorization: `Bearer ${token}` } });
+      }
+      setForm({ name: '', email: '', address: '', owner: '' });
+      setEditId(null);
+      fetchStores();
+    } catch (err) {
+      console.error('Error submitting form:', err);
     }
-    setForm({ name: '', email: '', address: '', owner: '' });
-    setEditId(null);
-    fetchStores();
   };
 
   const handleEdit = store => {
@@ -34,8 +42,12 @@ const StoreManagement = () => {
   };
 
   const handleDelete = async id => {
-    await axios.delete(`/api/stores/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-    fetchStores();
+    try {
+      await api.delete(`/api/stores/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      fetchStores();
+    } catch (err) {
+      console.error('Error deleting store:', err);
+    }
   };
 
   return (
@@ -86,7 +98,7 @@ const StoreManagement = () => {
       </form>
 
       <div className="mt-8 space-y-6">
-        {stores.map(store => (
+        {(stores || []).map(store => (
           <div
             key={store._id}
             className="group border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl shadow-lg p-5 transition-all hover:shadow-xl hover:border-pink-400"

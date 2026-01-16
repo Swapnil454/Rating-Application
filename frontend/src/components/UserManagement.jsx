@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { motion } from 'framer-motion';
 import { UserPlus, Edit3, Trash } from 'lucide-react';
 
@@ -10,8 +10,12 @@ const UserManagement = () => {
   const token = localStorage.getItem('token');
 
   const fetchUsers = () => {
-    axios.get('/api/users', { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => setUsers(res.data));
+    api.get('/api/users', { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => setUsers(res.data || []))
+      .catch(err => {
+        console.error('Failed to fetch users:', err);
+        setUsers([]);
+      });
   };
 
   useEffect(() => { fetchUsers(); }, [token]);
@@ -20,14 +24,18 @@ const UserManagement = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (editId) {
-      await axios.put(`/api/users/${editId}`, form, { headers: { Authorization: `Bearer ${token}` } });
-    } else {
-      await axios.post('/api/users', form, { headers: { Authorization: `Bearer ${token}` } });
+    try {
+      if (editId) {
+        await api.put(`/api/users/${editId}`, form, { headers: { Authorization: `Bearer ${token}` } });
+      } else {
+        await api.post('/api/users', form, { headers: { Authorization: `Bearer ${token}` } });
+      }
+      setForm({ name: '', email: '', address: '', password: '', role: 'user' });
+      setEditId(null);
+      fetchUsers();
+    } catch (err) {
+      console.error('Error submitting form:', err);
     }
-    setForm({ name: '', email: '', address: '', password: '', role: 'user' });
-    setEditId(null);
-    fetchUsers();
   };
 
   const handleEdit = user => {
@@ -36,7 +44,7 @@ const UserManagement = () => {
   };
 
   const handleDelete = async id => {
-    await axios.delete(`/api/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    await api.delete(`/api/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
     fetchUsers();
   };
 
@@ -71,7 +79,7 @@ const UserManagement = () => {
       </form>
 
       <div className="mt-8 space-y-4">
-        {users.map(user => (
+        {(users || []).map(user => (
           <motion.div key={user._id}
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 flex justify-between items-center">

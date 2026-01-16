@@ -1,57 +1,7 @@
-// // pages/ResetPassword.jsx
-// import { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
 
-// const ResetPassword = () => {
-//   const [password, setPassword] = useState('');
-//   const [message, setMessage] = useState('');
-//   const [error, setError] = useState('');
-//   const navigate = useNavigate();
-
-//   const email = localStorage.getItem('resetEmail');
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setError('');
-//     setMessage('');
-
-//     try {
-//       await axios.post('/api/auth/reset-password', { email, newPassword: password });
-//       setMessage('Password reset successful. Redirecting to login...');
-//       setTimeout(() => {
-//         localStorage.removeItem('resetEmail');
-//         navigate('/login');
-//       }, 2000);
-//     } catch (err) {
-//       setError(err.response?.data?.error || 'Reset failed.');
-//     }
-//   };
-
-//   return (
-//     <div className="p-6 max-w-md mx-auto mt-20 bg-white rounded-xl shadow-md space-y-6">
-//       <h2 className="text-xl font-semibold">Reset Password</h2>
-//       <form onSubmit={handleSubmit}>
-//         <input
-//           type="password"
-//           placeholder="New Password"
-//           value={password}
-//           required
-//           onChange={(e) => setPassword(e.target.value)}
-//           className="w-full p-2 border rounded mb-4"
-//         />
-//         <button className="w-full py-2 bg-indigo-600 text-white rounded">Update Password</button>
-//       </form>
-//       {message && <p className="text-green-600">{message}</p>}
-//       {error && <p className="text-red-500">{error}</p>}
-//     </div>
-//   );
-// };
-
-// export default ResetPassword;
 
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
@@ -74,7 +24,7 @@ const ResetPassword = () => {
     }
 
     try {
-      await axios.post('/api/auth/reset-password', { email, newPassword: password });
+      await api.post('/api/auth/reset-password', { email, newPassword: password });
       setMessage('✅ Password reset successful. Redirecting...');
       setTimeout(() => {
         localStorage.removeItem('resetEmail');
