@@ -49,7 +49,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import axios from 'axios';
+import api from '../api/axios';
 import { Mail } from 'lucide-react';
 
 const ForgotPassword = () => {
@@ -64,7 +64,7 @@ const ForgotPassword = () => {
     setError('');
 
     try {
-      const res = await axios.post('/api/auth/forgot-password', { email });
+      const res = await api.post('/api/auth/forgot-password', { email });
       setMessage(res.data.message);
       localStorage.setItem('resetEmail', email);
       setTimeout(() => navigate('/verify-reset-otp'), 1500);

@@ -28,24 +28,15 @@
 
 
 // module.exports = sendOTP;
+const sgMail = require("@sendgrid/mail");
 
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.sendgrid.net",
-  port: 587,
-  secure: false,
-  auth: {
-    user: "apikey",
-    pass: process.env.SENDGRID_API_KEY,
-  },
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendOTP = async (to, otp) => {
   try {
-    await transporter.sendMail({
-      from: `"Rating App" <${process.env.EMAIL_FROM}>`,
+    const msg = {
       to,
+      from: process.env.EMAIL_FROM, // MUST be verified in SendGrid
       subject: "Your OTP Verification Code",
       html: `
         <div style="font-family: Arial, sans-serif;">
@@ -57,13 +48,15 @@ const sendOTP = async (to, otp) => {
           <small>If you did not request this, ignore this email.</small>
         </div>
       `,
-    });
+    };
 
-    console.log("✅ OTP email sent to:", to);
-    console.log("✅ OTP code:", otp);
+    // 🔥 NON-BLOCKING SEND (IMPORTANT)
+    sgMail.send(msg)
+      .then(() => console.log("✅ OTP email sent to:", to))
+      .catch(err => console.error("❌ SendGrid error:", err.message));
+
   } catch (err) {
     console.error("❌ Failed to send OTP:", err.message);
-    throw err; 
   }
 };
 

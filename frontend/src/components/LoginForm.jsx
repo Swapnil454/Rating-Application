@@ -137,7 +137,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/axios';
 import { motion } from 'framer-motion';
 
 const LoginForm = ({ onLogin }) => {
@@ -151,7 +151,7 @@ const LoginForm = ({ onLogin }) => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const res = await axios.post('/api/auth/login', form);
+      const res = await api.post('/api/auth/login', form);
       setMessage('Login successful!');
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));

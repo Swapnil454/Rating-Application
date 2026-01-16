@@ -56,9 +56,20 @@ exports.signup = async (req, res) => {
       tempUser: { name, email, address, password: hash, role }
     });
 
-    await sendOTP(email, otp);
-
-    res.status(200).json({ message: 'OTP sent to email.' });
+    try {
+      sendOTP(email, otp);
+      res.status(200).json({ message: 'OTP sent to email.' });
+    } catch (emailError) {
+      console.error("Email sending failed:", emailError.message);
+      
+      // Still return success but with a different message
+      // The OTP is stored, so user can still verify if they know the OTP
+      res.status(200).json({ 
+        message: 'Account created! Email service is temporarily unavailable. Please check your console for the OTP or try resending.',
+        emailError: true,
+        otp: process.env.NODE_ENV === 'development' ? otp : undefined // Only send OTP in development
+      });
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -112,7 +123,7 @@ exports.resendOTP = async (req, res) => {
 
     otpStore.set(email, otpData);
 
-    await sendOTP(email, newOtp);
+    sendOTP(email, newOtp);
 
     res.json({ message: 'OTP resent to email.' });
     console.log("Current Step:", step);
@@ -254,7 +265,7 @@ exports.forgotPassword = async (req, res) => {
     otpStore.set(email, { otp, expiresAt });
 
     // 6️⃣ Send OTP
-    await sendOTP(email, otp);
+    sendOTP(email, otp);
 
     return res.status(200).json({
       success: true,

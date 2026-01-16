@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
@@ -49,7 +49,7 @@ const SignupForm = () => {
       // ✅ OTP Submit
       try {
         setLoading(true);
-        const res = await axios.post('/api/auth/verify-otp', {
+        const res = await api.post('/api/auth/verify-otp', {
           email: emailForOtp,
           otpInput: otp,
         });
@@ -76,7 +76,7 @@ const SignupForm = () => {
       // ✅ Signup Submit
       try {
         setLoading(true);
-        const res = await axios.post('/api/auth/signup', form);
+        const res = await api.post('/api/auth/signup', form);
 
         setMessage(res.data.message || 'Signup successful! Please check your email for OTP.');
         setShowOtpField(true);
@@ -95,7 +95,7 @@ const SignupForm = () => {
   const handleResendOtp = async () => {
     try {
       setLoading(true);
-      const res = await axios.post('/api/auth/resend-otp', { email: emailForOtp });
+      const res = await api.post('/api/auth/resend-otp', { email: emailForOtp });
       setMessage(res.data.message || 'OTP resent successfully.');
       setSuccess(true);
     } catch (err) {
