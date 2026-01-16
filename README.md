@@ -2,6 +2,8 @@
 
 A full-stack web application for rating and managing stores, built with React frontend and Node.js backend.
 
+🚀 **Live Demo**: [https://rating-application.vercel.app/](https://rating-application.vercel.app/)
+
 ## Features
 
 - **User Authentication**: Sign up, login, password recovery with OTP
