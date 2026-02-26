@@ -159,7 +159,7 @@ const SignupForm = () => {
             >
               <option value="user">👤 User</option>
               <option value="owner">🏪 Store Owner</option>
-              <option value="admin">Admin</option>
+              {/* <option value="admin">Admin</option> */}
             </select>
           </div>
         ) : (
