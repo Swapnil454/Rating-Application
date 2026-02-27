@@ -1,0 +1,20 @@
+User-agent: *
+Disallow:
+
+# Allow all crawlers access to everything
+
+Sitemap: https://ratingapp.online/sitemap.xml
+
+# Block sensitive or non-public paths
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+
+# Optional: Crawl-delay for aggressive bots
+# Crawl-delay: 10
+
+# Optional: Specific bot rules
+# User-agent: Googlebot
+# Disallow:
+# User-agent: Bingbot
+# Disallow:
