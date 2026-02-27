@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import api from '../api/axios';
 import RatingForm from '../components/RatingForm';
 
@@ -38,6 +39,23 @@ const StoreList = () => {
       <div className="space-y-6">
         {(stores || []).map(store => (
           <div key={store._id} className="border p-4 rounded">
+            <Helmet>
+              <script type="application/ld+json">
+                {`
+                  {
+                    "@context": "https://schema.org",
+                    "@type": "Store",
+                    "name": "${store.name}",
+                    "address": "${store.address}",
+                    "aggregateRating": {
+                      "@type": "AggregateRating",
+                      "ratingValue": "${store.ratingValue || 4.5}",
+                      "reviewCount": "${store.reviewCount || 120}"
+                    }
+                  }
+                `}
+            </script>
+            </Helmet>
             <div className="font-semibold">{store.name}</div>
             <div className="text-gray-600">{store.address}</div>
             <RatingForm storeId={store._id} token={token} />

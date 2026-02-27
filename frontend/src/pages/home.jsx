@@ -26,14 +26,15 @@ const Home = ({ user }) => {
         <meta name="twitter:description" content="Rate stores, manage reviews, and explore customer feedback easily." />
         <meta name="twitter:image" content="https://ratingapp.online/og-image.png" />
         {/* Canonical */}
-        <link rel="canonical" href="https://ratingapp.online/" />
+        <link rel="canonical" href="https://www.ratingapp.online/" />
+        <meta property="og:url" content="https://www.ratingapp.online/" />
 
         <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebApplication",
           "name": "Rating App",
-          "url": "https://ratingapp.online/",
+          "url": "https://www.ratingapp.online/",
           "applicationCategory": "BusinessApplication",
           "operatingSystem": "All",
           "description": "An online platform to rate stores, manage reviews, and explore real customer feedback."
