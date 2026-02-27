@@ -7,38 +7,54 @@ const Home = ({ user }) => {
     <>
       <Helmet>
         <title>Rating App – Rate Stores & Manage Feedback Online</title>
-        <meta 
-          name="description" 
-          content="Rating App is an online platform to rate stores, manage customer reviews, and explore real user feedback. Perfect for shoppers and store owners." 
+
+        <meta
+          name="description"
+          content="Rating App is an online platform to rate stores, manage customer reviews, and explore real user feedback. Perfect for shoppers and store owners."
         />
-        <meta name="keywords" content="rating app, rate stores, store reviews, online ratings, customer feedback platform" />
+
+        <meta
+          name="keywords"
+          content="rating app, rate stores, store reviews, online ratings, customer feedback platform"
+        />
+
         <meta name="author" content="Rating App" />
-        
-        {/* Open Graph */}
-        <meta property="og:title" content="Rating App – Rate Stores & Manage Feedback" />
-        <meta property="og:description" content="Rate stores, explore feedback, and manage ratings easily." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://ratingapp.online/" />
-        <meta property="og:image" content="https://ratingapp.online/og-image.png" />
-        <meta property="og:site_name" content="Rating App" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Rating App – Rate Stores & Manage Reviews Online" />
-        <meta name="twitter:description" content="Rate stores, manage reviews, and explore customer feedback easily." />
-        <meta name="twitter:image" content="https://ratingapp.online/og-image.png" />
+
         {/* Canonical */}
         <link rel="canonical" href="https://www.ratingapp.online/" />
-        <meta property="og:url" content="https://www.ratingapp.online/" />
 
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Rating App – Rate Stores & Manage Feedback Online" />
+        <meta
+          property="og:description"
+          content="Rate stores, explore feedback, and manage ratings easily with Rating App."
+        />
+        <meta property="og:url" content="https://www.ratingapp.online/" />
+        <meta property="og:image" content="https://www.ratingapp.online/og-image.png" />
+        <meta property="og:site_name" content="Rating App" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Rating App – Rate Stores & Manage Reviews Online" />
+        <meta
+          name="twitter:description"
+          content="Explore ratings, share reviews, and discover top-rated stores instantly."
+        />
+        <meta name="twitter:image" content="https://www.ratingapp.online/og-image.png" />
+
+        {/* Structured Data */}
         <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebApplication",
-          "name": "Rating App",
-          "url": "https://www.ratingapp.online/",
-          "applicationCategory": "BusinessApplication",
-          "operatingSystem": "All",
-          "description": "An online platform to rate stores, manage reviews, and explore real customer feedback."
-        })}
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "Rating App",
+            "url": "https://www.ratingapp.online/",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "All",
+            "description":
+              "An online platform to rate stores, manage reviews, and explore real customer feedback."
+          })}
         </script>
       </Helmet>
       <div className="min-h-screen bg-gradient-to-br from-purple-800 via-violet-900 to-black text-white">
