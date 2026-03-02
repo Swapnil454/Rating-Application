@@ -1,5 +1,5 @@
 User-agent: *
-Disallow:
+Allow: /
 
 # Allow all crawlers access to everything
 
