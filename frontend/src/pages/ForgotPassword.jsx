@@ -1,28 +1,33 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../api/axios';
-import { Mail } from 'lucide-react';
+import { Mail, Loader2 } from 'lucide-react';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     setMessage('');
     setError('');
+    setLoading(true);
 
     try {
-      const res = await api.post('/api/auth/forgot-password', { email });
+      const res = await api.post('/api/auth/forgot-password', { email: email.trim() });
       setMessage(res.data.message);
       localStorage.setItem('resetEmail', email);
       setTimeout(() => navigate('/verify-reset-otp'), 1500);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to send OTP.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,9 +62,17 @@ const ForgotPassword = () => {
 
         <button
           type="submit"
-          className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+          disabled={loading}
+          className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:bg-violet-400 disabled:cursor-not-allowed text-white font-semibold transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
         >
-          Send OTP
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin" size={20} />
+              Sending...
+            </>
+          ) : (
+            'Send OTP'
+          )}
         </button>
 
         {message && (

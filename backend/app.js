@@ -24,11 +24,20 @@ app.set("trust proxy", 1);
 
 app.use(express.json());
 
+const allowedOrigins = process.env.CLIENT_URL?.split(',').map(url => url.trim()) || [];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.warn(`CORS blocked: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"]
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
   })
 );
 
