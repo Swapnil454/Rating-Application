@@ -1,101 +1,127 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import api from '../api/axios';
-import { Loader2 } from 'lucide-react';
+import AuthLayout from '../components/AuthLayout';
 
 const VerifyResetOtp = () => {
   const [otp, setOtp] = useState('');
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(120); 
   const navigate = useNavigate();
   const email = localStorage.getItem('resetEmail');
 
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  useEffect(() => {
+    if (!email) {
+      navigate('/forgot-password');
+    }
+  }, [email, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
+    setMessage('');
     setError('');
     setLoading(true);
 
     try {
-      await api.post('/api/auth/verify-reset-otp', { email, otpInput: otp });
-      setTimeout(() => {
-        setLoading(false);
-        navigate('/reset-password');
-      }, 1000);
+      const res = await api.post('/api/auth/verify-reset-otp', { email, otpInput: otp.trim() });
+      setMessage(res.data.message);
+      setTimeout(() => navigate('/reset-password'), 1500);
     } catch (err) {
-      setLoading(false);
       setError(err.response?.data?.error || 'Invalid OTP.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const res = await api.post('/api/auth/forgot-password', { email });
+      setMessage(res.data.message || 'OTP resent successfully.');
+      setResendTimer(120);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to resend OTP.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-gradient-to-tr from-gray-900 via-black to-gray-800 p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="bg-white/10 dark:bg-black/30 backdrop-blur-md rounded-2xl p-8 w-full max-w-md shadow-lg border border-white/10"
-      >
-        <div className="text-center space-y-3 mb-6">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/3783/3783024.png"
-            alt="otp"
-            className="w-16 mx-auto drop-shadow"
-          />
-          <h2 className="text-3xl font-extrabold text-white">Verify Your OTP</h2>
-          <p className="text-sm text-gray-300">
-            Enter the 6-digit code sent to <span className="font-medium">{email}</span>.
-          </p>
-        </div>
+    <AuthLayout>
+      <div className="mb-6 text-center">
+        <h2 className="text-2xl font-bold text-white tracking-tight mb-1">
+          Verify OTP
+        </h2>
+        <p className="text-gray-400 text-xs">
+          Enter the 6-digit code sent to <span className="font-semibold text-white">{email}</span>
+        </p>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
           <input
             type="text"
-            placeholder="Enter OTP"
+            placeholder="000000"
             value={otp}
             required
-            onChange={(e) => setOtp(e.target.value)}
             maxLength={6}
-            className="w-full px-4 py-3 rounded-xl border border-gray-400 dark:border-gray-600 bg-white/90 dark:bg-slate-900 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-center tracking-widest text-lg font-semibold"
+            onChange={(e) => setOtp(e.target.value)}
+            className="w-full px-4 py-3 text-center tracking-[0.5em] text-xl font-bold rounded-lg border border-white/10 bg-white/5 text-white placeholder-gray-600 focus:ring-2 focus:ring-arcova-gold focus:border-transparent outline-none transition-all"
           />
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="animate-spin w-5 h-5 mr-2" />
-                Verifying...
-              </>
-            ) : (
-              'Verify OTP'
-            )}
-          </button>
-        </form>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-3 mt-4 rounded-lg bg-arcova-gold hover:bg-yellow-500 text-[#0a0a0a] font-bold tracking-wide transition-all duration-300 shadow-[0_4px_14px_0_rgba(212,175,55,0.39)] flex justify-center items-center text-sm"
+        >
+          {loading ? 'Processing...' : 'Verify OTP'}
+        </button>
 
+        <button
+          type="button"
+          onClick={handleResendOtp}
+          className={`w-full py-3 mt-2 rounded-lg border text-xs font-bold uppercase tracking-widest transition-all ${
+            resendTimer > 0 || loading 
+            ? 'border-white/5 text-gray-600 bg-white/5 cursor-not-allowed' 
+            : 'border-white/10 text-gray-400 hover:text-white hover:bg-white/5'
+          }`}
+          disabled={loading || resendTimer > 0}
+        >
+          {loading 
+            ? 'Sending...' 
+            : resendTimer > 0 
+              ? `Resend in ${Math.floor(resendTimer / 60)}:${(resendTimer % 60).toString().padStart(2, '0')}` 
+              : 'Resend OTP'}
+        </button>
+
+        {message && (
+          <div className="text-center text-xs text-green-400 font-medium mt-3 p-2.5 bg-green-400/10 rounded-lg border border-green-400/20">
+            {message}
+          </div>
+        )}
         {error && (
-          <div className="text-center mt-4 text-sm text-red-500 font-medium animate-pulse">
+          <div className="text-center text-xs text-red-400 font-medium mt-3 p-2.5 bg-red-400/10 rounded-lg border border-red-400/20">
             {error}
           </div>
         )}
-
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-400">
-            Didn't get the code?{' '}
-            <button
-              type="button"
-              onClick={() => navigate('/forgot-password')}
-              className="text-emerald-400 font-medium "
-            >
-              Resend OTP
-            </button>
-          </p>
-        </div>
-      </motion.div>
-    </div>
+      </form>
+    </AuthLayout>
   );
 };
 

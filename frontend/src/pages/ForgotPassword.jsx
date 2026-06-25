@@ -1,27 +1,41 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
-import { Mail, Loader2 } from 'lucide-react';
+import AuthLayout from '../components/AuthLayout';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const handleChange = (e) => {
+    const val = e.target.value.toLowerCase();
+    setEmail(val);
+    
+    if (val.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      setEmailError('Invalid email address.');
+    } else {
+      setEmailError('');
+    }
+  };
+
+  const isSubmitDisabled = loading || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return;
+    if (isSubmitDisabled) return;
 
-    setMessage('');
-    setError('');
     setLoading(true);
-
+    setError('');
+    setMessage('');
+    
     try {
-      const res = await api.post('/api/auth/forgot-password', { email: email.trim() });
-      setMessage(res.data.message);
+      const res = await api.post('/api/auth/forgot-password', { email });
+      setMessage(res.data.message || 'OTP sent to your email.');
       localStorage.setItem('resetEmail', email);
       setTimeout(() => navigate('/verify-reset-otp'), 1500);
     } catch (err) {
@@ -32,71 +46,79 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-700 to-violet-900 dark:from-gray-900 dark:to-gray-800 p-4">
-      <motion.form
-        onSubmit={handleSubmit}
-        initial={{ opacity: 0, scale: 0.95, y: 40 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="bg-white/10 dark:bg-slate-900/20 backdrop-blur-lg shadow-2xl rounded-2xl px-8 py-10 w-full max-w-md space-y-6 border border-white/20 dark:border-slate-800"
-      >
-        <h2 className="text-3xl font-bold text-center text-white dark:text-slate-100">
-          🔐 Forgot Password
+    <AuthLayout>
+      <div className="mb-10 text-center">
+        <h2 className="text-3xl font-bold text-white tracking-tight mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Forgot Password
         </h2>
+        <p className="text-gray-400 text-sm">Submit your registered email for an OTP.</p>
+      </div>
 
-        <p className="text-sm text-center text-slate-300 dark:text-slate-400">
-          Submit your registered email and we'll send you an OTP.
-        </p>
-
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-7">
+        
+        <div className="relative flex flex-col gap-1">
+          <label htmlFor="email" className="text-[10px] text-gray-500 font-bold uppercase tracking-widest pl-1">
+            Email Address
+          </label>
           <input
+            name="email"
+            id="email"
             type="email"
-            placeholder="Enter your email"
+            placeholder="user@example.com"
             value={email}
+            onChange={handleChange}
             required
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white/80 dark:bg-slate-800 text-gray-800 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-violet-500 focus:outline-none"
+            className={`w-full bg-transparent border-0 border-b-2 text-white px-1 pb-2 focus:ring-0 focus:outline-none transition-colors text-sm ${emailError ? 'border-red-500 focus:border-red-500' : 'border-white/20 focus:border-arcova-gold'}`}
           />
+          <AnimatePresence>
+            {emailError && (
+              <motion.span initial={{opacity:0, y:-5}} animate={{opacity:1, y:0}} exit={{opacity:0}} className="absolute -bottom-5 left-1 text-[10px] text-red-500 font-bold tracking-wide">
+                {emailError}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
 
         <button
           type="submit"
-          disabled={loading}
-          className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:bg-violet-400 disabled:cursor-not-allowed text-white font-semibold transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+          disabled={isSubmitDisabled}
+          className={`w-full py-4 mt-4 rounded-full font-black uppercase tracking-widest transition-all duration-300 flex justify-center items-center text-xs ${
+            isSubmitDisabled 
+            ? 'bg-white/10 text-gray-500 cursor-not-allowed border border-white/5' 
+            : 'bg-white hover:bg-gray-200 text-[#0a0a0a] shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_25px_rgba(255,255,255,0.3)] hover:-translate-y-0.5'
+          }`}
         >
-          {loading ? (
-            <>
-              <Loader2 className="animate-spin" size={20} />
-              Sending...
-            </>
-          ) : (
-            'Send OTP'
-          )}
+          {loading ? 'Sending OTP...' : 'Send OTP'}
         </button>
 
-        {message && (
-          <div className="text-center text-sm text-green-400 font-medium animate-pulse">
-            {message}
-          </div>
-        )}
-        {error && (
-          <div className="text-center text-sm text-red-500 font-medium animate-pulse">
-            {error}
-          </div>
-        )}
-
-        <div className="text-center mt-6">
-          <button
-            type="button"
-            onClick={() => navigate('/login')}
-            className="text-sm text-violet-300 "
-          >
-            Back to Login
-          </button>
+        <div className="text-center mt-2 text-xs text-gray-500 font-bold uppercase tracking-widest">
+          <Link to="/login" className="text-white hover:text-arcova-gold transition-colors ml-1 border-b border-white/30 hover:border-arcova-gold pb-0.5">BACK TO LOGIN</Link>
         </div>
-      </motion.form>
-    </div>
+
+        <AnimatePresence>
+          {message && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="text-center text-xs text-green-400 font-medium p-3 bg-green-400/10 rounded-lg border border-green-400/20"
+            >
+              {message}
+            </motion.div>
+          )}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="text-center text-xs text-red-400 font-medium p-3 bg-red-400/10 rounded-lg border border-red-400/20"
+            >
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </form>
+    </AuthLayout>
   );
 };
 

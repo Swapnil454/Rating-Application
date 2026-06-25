@@ -1,7 +1,7 @@
 
 const otpRequestStore = new Map();
 
-const OTP_COOLDOWN_MS = 60 * 1000; // 1 minute
+const OTP_COOLDOWN_MS = 60 * 1000; 
 
 function checkOtpCooldown(email) {
   const lastRequestTime = otpRequestStore.get(email);

@@ -1,79 +1,82 @@
 # Rating App
 
-A full-stack web application for rating and managing stores, built with React frontend and Node.js backend.
+## Overview
 
-🚀 **Live Demo**: [https://rating-application.vercel.app/](https://rating-application.vercel.app/)
+A comprehensive full-stack web application designed for rating and managing local stores. The platform facilitates community-driven reviews, providing distinct tools and interfaces for standard users, store owners, and platform administrators.
+
+**Live Demo**: https://www.ratingapp.online
 
 ## Features
 
-- **User Authentication**: Sign up, login, password recovery with OTP
-- **Role-based Access**: Different functionalities for users, store owners, and admins
-- **Store Rating System**: Users can rate stores and provide feedback
-- **Store Management**: Store owners can view their ratings and manage store information
-- **Admin Panel**: Administrators can manage users and stores
-- **Responsive Design**: Mobile-friendly interface built with Tailwind CSS
+- **User Authentication**: Secure sign up, login, and password recovery utilizing One-Time Passwords (OTP).
+- **Role-based Access Control**: Distinct capabilities and dashboards for Users, Store Owners, and Admins.
+- **Store Rating System**: Enables users to evaluate stores, assign ratings, and submit detailed feedback.
+- **Store Management**: Allows store owners to monitor their average ratings, view recent reviews, and update store details.
+- **Admin Panel**: Centralized dashboard for managing all platform users, stores, and moderation.
+- **Responsive Design**: Highly optimized, mobile-friendly interface built with Tailwind CSS and Framer Motion.
 
-## Tech Stack
+## Technology Stack
 
 ### Frontend
 - React 18
 - Vite
 - Tailwind CSS
-- Framer Motion (animations)
-- React Router
-- Axios
-- Lucide React (icons)
+- Framer Motion (Animations)
+- React Router (Routing)
+- Axios (HTTP Client)
+- Lucide React (Icons)
 
 ### Backend
 - Node.js
 - Express.js
-- MongoDB with Mongoose
-- JWT Authentication
-- Bcrypt for password hashing
+- PostgreSQL with Sequelize ORM
+- JWT (JSON Web Tokens) Authentication
+- Bcrypt (Password Hashing)
+- Resend (Email Delivery for OTPs)
 - Express Rate Limiting
-- CORS enabled
 
 ## Project Structure
 
-```
+```text
 Rating-App/
 ├── frontend/
 │   ├── src/
+│   │   ├── api/
 │   │   ├── components/
 │   │   ├── pages/
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   └── package.json
 ├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── middlewares/
-│   ├── utils/
-│   └── app.js
-└── package.json
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── middlewares/
+│   │   └── utils/
+│   ├── app.js
+│   └── package.json
+└── README.md
 ```
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- MongoDB
+- Node.js (v16 or higher)
+- PostgreSQL Database
 - npm or yarn
 
 ### Installation
 
-1. Clone the repository
+1. **Clone the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/rating-app.git
+git clone https://github.com/Swapnil454/rating-app.git
 cd rating-app
 ```
 
-2. Install dependencies
+2. **Install dependencies**
 ```bash
-# Install root dependencies
-npm install
-
 # Install backend dependencies
 cd backend
 npm install
@@ -83,24 +86,26 @@ cd ../frontend
 npm install
 ```
 
-3. Environment Setup
+3. **Environment Configuration**
 
-Create a `.env` file in the backend directory:
-```
-MONGODB_URI=your_mongodb_connection_string
+Create a `.env` file in the `backend` directory with the following variables:
+```env
+POSTGRES_URI=your_postgresql_connection_string
 JWT_SECRET=your_jwt_secret_key
-PORT=5000
+PORT=8786
+RESEND_API_KEY=your_resend_api_key
 ```
 
-4. Run the application
+Create a `.env` file in the `frontend` directory with the following variables:
+```env
+VITE_API_URL=http://localhost:8786
+```
+
+4. **Run the application**
 
 ```bash
-# From the root directory, run both frontend and backend concurrently
-npm run dev
-
-# Or run them separately:
 # Backend (from backend directory)
-npm start
+npm run dev
 
 # Frontend (from frontend directory)
 npm run dev
@@ -137,9 +142,9 @@ npm run dev
 
 ## User Roles
 
-1. **User**: Can rate stores and manage their own ratings
-2. **Owner**: Can view ratings for their stores and manage store information
-3. **Admin**: Full access to user management, store management, and system administration
+1. **User**: Can browse stores, submit ratings, and manage their own review history.
+2. **Owner**: Can view rating analytics for their specific stores and manage store contact/location information.
+3. **Admin**: Has full access to user management, store management, and system-wide administration.
 
 ## Contributing
 
@@ -151,8 +156,8 @@ npm run dev
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Support
 
-If you encounter any issues or have questions, please open an issue on GitHub.
+If you encounter any issues or have questions regarding the setup, please open an issue on the repository.
